@@ -1,4 +1,4 @@
-import type { Callable, Channel, Operation, Result } from "npm:effection@4.0.0-alpha.6";
+import type { Callable, Channel, Result } from "npm:effection@4.0.0-alpha.6";
 import { createChannel, resource, spawn } from 'npm:effection@4.0.0-alpha.6';
 
 import { safe } from './safe.ts';
@@ -89,7 +89,7 @@ export function parallel<T>(operations: Callable<T>[]) {
       yield* immediate.close();
     });
 
-    function* wait(): Operation<Result<T>[]> {
+    function* wait() {
       yield* task;
       return results;
     }

@@ -1,10 +1,10 @@
-import { describe, it } from "bdd";
-import { expect } from "expect";
-import { each, Err, Ok, run, sleep, spawn } from "npm:effection@3.0.3";
+import { describe, it } from 'bdd';
+import { expect } from 'expect';
+import { each, Err, Ok, run, sleep, spawn } from 'npm:effection@4.0.0-alpha.6';
 
-import { parallel } from "./parallel.ts";
+import { parallel } from './parallel.ts';
 
-import type { Operation, Result } from "npm:effection@3.0.3";
+import type { Operation, Result } from "npm:effection@4.0.0-alpha.6";
 
 const test = describe("parallel()");
 
@@ -43,7 +43,7 @@ it(
 
       const res: Result<string>[] = [];
       for (const val of yield* each(results.immediate)) {
-        res.push(val);
+        res.push(val as Result<string>); ;
         yield* each.next();
       }
 
@@ -73,7 +73,7 @@ it(
 
       const res: Result<string>[] = [];
       for (const val of yield* each(results.sequence)) {
-        res.push(val);
+        res.push(val as Result<string>);
         yield* each.next();
       }
 
