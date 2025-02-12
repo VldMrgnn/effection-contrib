@@ -1,7 +1,7 @@
-import type { Callable, Channel, Operation, Result } from "npm:effection@3.0.3";
-import { createChannel, resource, spawn } from "npm:effection@3.0.3";
+import type { Callable, Channel, Operation, Result } from "npm:effection@4.0.0-alpha.6";
+import { createChannel, resource, spawn } from 'npm:effection@4.0.0-alpha.6';
 
-import { safe } from "./safe.ts";
+import { safe } from './safe.ts';
 
 import type { Computation } from "./type.ts";
 export interface ParallelRet<T> extends Computation<Result<T>[]> {
@@ -62,8 +62,8 @@ export interface ParallelRet<T> extends Computation<Result<T>[]> {
  * ```
  */
 export function parallel<T>(operations: Callable<T>[]) {
-  const sequence = createChannel<Result<T>>();
-  const immediate = createChannel<Result<T>>();
+  const sequence = createChannel<Result<T>,void>();
+  const immediate = createChannel<Result<T>,void>();
   const results: Result<T>[] = [];
 
   return resource<ParallelRet<T>>(function* (provide) {
