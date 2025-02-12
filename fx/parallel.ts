@@ -1,10 +1,10 @@
-import type { Callable, Channel, Result } from "npm:effection@4.0.0-alpha.6";
+import type { Callable, Operation, Channel, Result } from "npm:effection@4.0.0-alpha.6";
 import { createChannel, resource, spawn } from 'npm:effection@4.0.0-alpha.6';
 
 import { safe } from './safe.ts';
 
 import type { Computation } from "./type.ts";
-export interface ParallelRet<T> extends Computation<Result<T>[]> {
+export interface ParallelRet<T> extends Operation<Result<T>[]> {
   sequence: Channel<Result<T>, void>;
   immediate: Channel<Result<T>, void>;
 }
