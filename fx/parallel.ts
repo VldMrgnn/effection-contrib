@@ -1,5 +1,5 @@
-import type { Callable, Operation, Channel, Result } from "npm:effection@4.0.0-alpha.6";
-import { createChannel, resource, spawn } from 'npm:effection@4.0.0-alpha.6';
+import type { Callable, Operation, Channel, Result } from "npm:effection@4.0.0-alpha.7";
+import { call, createChannel, resource, spawn } from 'npm:effection@4.0.0-alpha.7';
 
 import { safe } from './safe.ts';
 
@@ -72,7 +72,9 @@ export function parallel<T>(operations: Callable<T>[]) {
       for (const op of operations) {
         tasks.push(
           yield* spawn(function* () {
-            const result = yield* safe(op);
+          
+            const result = yield*safe(op);
+            
             yield* immediate.send(result);
             return result;
           }),
@@ -98,7 +100,7 @@ export function parallel<T>(operations: Callable<T>[]) {
       sequence,
       immediate,
       *[Symbol.iterator]() {
-        return yield* wait();
+        return yield* wait(); 
       },
     });
   });

@@ -1,10 +1,10 @@
 import { describe, it } from 'bdd';
 import { expect } from 'expect';
-import { each, Err, Ok, run, sleep, spawn } from 'npm:effection@4.0.0-alpha.6';
+import { call, each, Err, Ok, run, sleep, spawn } from 'npm:effection@4.0.0-alpha.7';
 
 import { parallel } from './parallel.ts';
 
-import type { Operation, Result } from "npm:effection@4.0.0-alpha.6";
+import type { Operation, Result } from "npm:effection@4.0.0-alpha.7";
 
 const test = describe("parallel()");
 
@@ -130,7 +130,7 @@ it(test, "should resolve all async items", async () => {
       yield* sleep(15);
       two.resolve(2);
     });
-    const results = yield* parallel([one, () => two.promise]);
+    const results = yield* parallel([call(two.promise)]);
     return yield* results;
   });
 

@@ -1,5 +1,5 @@
-import type { Callable, Operation, Result } from "npm:effection@4.0.0-alpha.6";
-import { call, Err, Ok } from 'npm:effection@4.0.0-alpha.6';
+import type { Callable, Operation, Result } from "npm:effection@4.0.0-alpha.7";
+import { call, Err, Ok } from 'npm:effection@4.0.0-alpha.7';
 
 /**
  * The goal of `safe` is to wrap Operations to prevent them from raising

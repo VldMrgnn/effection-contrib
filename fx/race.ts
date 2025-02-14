@@ -1,5 +1,5 @@
-import type { Callable, Operation, Task } from "npm:effection@4.0.0-alpha.6";
-import { action, call, resource, spawn } from 'npm:effection@4.0.0-alpha.6';
+import type { Callable, Operation, Task } from "npm:effection@4.0.0-alpha.7";
+import { action, call, resource, spawn } from 'npm:effection@4.0.0-alpha.7';
 
 interface OpMap<T = unknown> {
   [key: string]: Callable<T>;
