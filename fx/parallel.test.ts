@@ -130,7 +130,7 @@ it(test, "should resolve all async items", async () => {
       yield* sleep(15);
       two.resolve(2);
     });
-    const results = yield* parallel([call(two.promise)]);
+    const results = yield* parallel([one, ()=>two.promise]);
     return yield* results;
   });
 

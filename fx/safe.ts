@@ -25,7 +25,8 @@ function isError(error: unknown): error is Error {
 
 export function* safe<T>(operator: Callable<T>): Operation<Result<T>> {
   try {
-    const value = yield* call<T>(operator as any);
+    // deno-lint-ignore no-explicit-any
+    const value = yield* call<T>(()=>operator as any);
     return Ok(value);
   } catch (error) {
     return Err(isError(error) ? error : new Error(String(error)));

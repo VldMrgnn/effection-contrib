@@ -3,7 +3,6 @@ import { call, createChannel, resource, spawn } from 'npm:effection@4.0.0-alpha.
 
 import { safe } from './safe.ts';
 
-import type { Computation } from "./type.ts";
 export interface ParallelRet<T> extends Operation<Result<T>[]> {
   sequence: Channel<Result<T>, void>;
   immediate: Channel<Result<T>, void>;
@@ -62,22 +61,38 @@ export interface ParallelRet<T> extends Operation<Result<T>[]> {
  * ```
  */
 export function parallel<T>(operations: Callable<T>[]) {
-  const sequence = createChannel<Result<T>,void>();
-  const immediate = createChannel<Result<T>,void>();
+  const sequence = createChannel<Result<T>, void>();
+  const immediate = createChannel<Result<T>, void>();
   const results: Result<T>[] = [];
 
+  function wrapOperation(op: Callable<T>) {
+    return function* () {
+      const candidate = op;
+      // deno-lint-ignore no-explicit-any
+      if (candidate != null && typeof (candidate as any).then === "function") {
+        return (() => candidate) as Callable<T>;
+      }
+      // deno-lint-ignore no-explicit-any
+      else if (candidate != null && typeof (candidate as any).next === "function") {
+        return candidate as Callable<T>;
+      }
+      else {
+        return (()=>candidate) as Callable<T>;
+      }
+    };
+  }
   return resource<ParallelRet<T>>(function* (provide) {
     const task = yield* spawn(function* () {
       const tasks = [];
       for (const op of operations) {
         tasks.push(
           yield* spawn(function* () {
-          
-            const result = yield*safe(op);
-            
+            const wrapped = wrapOperation(op);
+            const normalized = yield* call(wrapped); 
+            const result = yield* safe(normalized);         
             yield* immediate.send(result);
             return result;
-          }),
+          })
         );
       }
 
@@ -100,8 +115,54 @@ export function parallel<T>(operations: Callable<T>[]) {
       sequence,
       immediate,
       *[Symbol.iterator]() {
-        return yield* wait(); 
+        return yield* wait();
       },
     });
   });
 }
+
+/* -------------------------------------------------------------------------- */
+
+// export function parallel__initial<T>(operations: Callable<T>[]) {
+//   const sequence = createChannel<Result<T>,void>();
+//   const immediate = createChannel<Result<T>,void>();
+//   const results: Result<T>[] = [];
+
+//   return resource<ParallelRet<T>>(function* (provide) {
+//     const task = yield* spawn(function* () {
+//       const tasks = [];
+//       for (const op of operations) {
+//         tasks.push(
+//           yield* spawn(function* () {
+                       
+//             const result = yield*safe(op);
+//             yield* immediate.send(result);
+//             return result;
+//           }),
+//         );
+//       }
+
+//       for (const tsk of tasks) {
+//         const res = yield* tsk;
+//         results.push(res);
+//         yield* sequence.send(res);
+//       }
+
+//       yield* sequence.close();
+//       yield* immediate.close();
+//     });
+
+//     function* wait() {
+//       yield* task;
+//       return results;
+//     }
+
+//     yield* provide({
+//       sequence,
+//       immediate,
+//       *[Symbol.iterator]() {
+//         return yield* wait(); 
+//       },
+//     });
+//   });
+// }
